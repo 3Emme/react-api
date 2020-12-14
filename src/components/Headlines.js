@@ -1,43 +1,47 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import {makeApiCall} from '../actions';
 
 class Headlines extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      headlines: [],
-    };
+    // this.state = {
+    //   error: null,
+    //   isLoaded: false,
+    //   headlines: [],
+    // };
   }
 
   componentDidMount() {
-    this.makeApiCall()
+    const {dispatch} = this.props;
+    dispatch(makeApiCall());
+    // this.makeApiCall()
   }
 
-  makeApiCall = () => {
-    fetch(`https://api.nytimes.com/svc/topstories/v2/home.json?api-key=${process.env.REACT_APP_API_KEY}`)
-    .then(response => response.json())
-    .then(
-      (jsonifiedResponse) => {
-        this.setState({
-          isLoaded: true,
-          headlines: jsonifiedResponse.results
-        });
-      })
-      .catch((error) => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      });
+  // makeApiCall = () => {
+  //   fetch(`https://api.nytimes.com/svc/topstories/v2/home.json?api-key=${process.env.REACT_APP_API_KEY}`)
+  //   .then(response => response.json())
+  //   .then(
+  //     (jsonifiedResponse) => {
+  //       this.setState({
+  //         isLoaded: true,
+  //         headlines: jsonifiedResponse.results
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       this.setState({
+  //         isLoaded: true,
+  //         error
+  //       });
+  //     });
 
-  }
+  //}
   render() {
-    const {error, isLoaded, headlines} =this.state;
+    const {error, isLoaded, headlines} =this.props;
     if (error) {
       return <React.Fragment>Error: {error.message}</React.Fragment>;
     } else if (!isLoaded) {
-      return <Return.Fragment>Loading.... Still Loading... Go DO SOMETHING ELSE!</Return.Fragment>
+      return <React.Fragment>Loading.... Still Loading... Go DO SOMETHING ELSE!</React.Fragment>
     } else {
       return (
         <React.Fragment>
@@ -56,3 +60,13 @@ class Headlines extends React.Component {
     
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    headlines: state.headlines,
+    isLoading: state.isLoading,
+    error: state.error
+  }
+}
+
+export default connect(mapStateToProps)(Headlines);
